@@ -1,0 +1,78 @@
+Module de détection Ultrason : HC-SR04
+
+
+
+
+
+
+Ce capteur utilise les ultrasons comme moyen de détection pour déterminer la distance d’un objet, il fonctionne sur une large zone sur tout type de matériaux, même s’il est préférable que ces matériaux soit plutôt plat pour ne pas affecter les distances.
+ Ça plage de mesure est de 2 cm à 400 cm, il a besoin d’une alimentation de de 5V.
+ Voici ses datasheets pour plus d’information :
+https://www.mouser.com/ds/2/813/HCSR04-1022824.pdf
+Il possède 4 broches de connexion : 
+_GND : la masse 
+_VCC : l’alimentation 
+_Trigger : déclanchement de la mesure (deux position HIGH et LOW, qui corresponde à l’état du signal actif ou inactif)
+_Echo : Sortie de la mesure en echo (un calcul sera nécessaire pour convertir la mesure)
+Voici les comment se branche ce capteur :
+
+
+
+
+
+
+
+
+
+
+
+
+
+Voici un code Arduino pour utiliser ce capteur :
+/* Constantes pour les broches */
+const byte TRIGGER_PIN = 2; // Broche TRIGGER
+const byte ECHO_PIN = 3;    // Broche ECHO
+ 
+/* Constantes pour le timeout */
+const unsigned long MEASURE_TIMEOUT = 25000UL; // 25ms = ~8m à 340m/s
+/* Vitesse du son dans l'air en mm/us */
+const float SOUND_SPEED = 340.0 / 1000;
+
+/** Fonction setup() */
+void setup() {
+   
+  /* Initialise le port série */
+  Serial.begin(115200);
+   
+  /* Initialise les broches */
+  pinMode(TRIGGER_PIN, OUTPUT);
+  digitalWrite(TRIGGER_PIN, LOW); // La broche TRIGGER doit être à LOW au repos
+  pinMode(ECHO_PIN, INPUT);
+}
+ 
+/** Fonction loop() */
+void loop() {
+  
+  /* 1. Lance une mesure de distance en envoyant une impulsion HIGH de 10µs sur la broche TRIGGER */
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER_PIN, LOW);
+  
+  /* 2. Mesure le temps entre l'envoi de l'impulsion ultrasonique et son écho (si il existe) */
+  long measure = pulseIn(ECHO_PIN, HIGH, MEASURE_TIMEOUT);
+   
+  /* 3. Calcul la distance à partir du temps mesuré */
+  float distance_mm = measure / 2.0 * SOUND_SPEED;
+   
+  /* Affiche les résultats en mm, cm et m */
+  Serial.print(F("Distance: "));
+  Serial.print(distance_mm);
+  Serial.print(F("mm ("));
+  Serial.print(distance_mm / 10.0, 2);
+  Serial.print(F("cm, "));
+  Serial.print(distance_mm / 1000.0, 2);
+  Serial.println(F("m)"));
+ 
+  delay(500);  }
+
+
