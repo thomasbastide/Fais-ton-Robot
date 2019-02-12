@@ -1,0 +1,46 @@
+Capteur infrarouge (SHARP) :
+
+
+
+
+
+
+
+
+
+Composé d’un émetteur infrarouge et d’un récepteur , il fonctionne avec une alimentation de 5V .Dans notre cas nous utilisons un capteur CP2Y0A21 qui détecte les obstacles entre 10 et 80 cm .
+ici les datasheet de notre capteur http://www.robotshop.com/ca/content/PDF/datasheet-gp2y0a21yk0f.pdf
+
+On peut l’utiliser avec une carte arduino 
+branchement ci-dessous:
+Voici le code arduino :
+
+unsigned int val , z , sharp = 0;
+
+void setup()
+{
+    Serial.begin(9600);
+}
+void loop()
+{
+       if(millis()%10 == 0) //on récupère des valeurs toute les 10 milliseconde
+      {
+      val = analogRead(sharp); //on récupère la valeure
+      z++; //on incrémente un compteur pour faire une moyenne de toute les valeure afin     d’être le plus précis possible
+      }
+      if(millis()%100 == 0)//on affiche les valeurs toutes les 100 milliseconde
+      {
+       val = 10799*pow(val/z,-1.15);//on fait une moyenne de toute nos valeurs et on les                       converti  en cm
+        Serial.println(val);//on affiche les valeurs sur la console
+}
+
+Pour convertire nos valeurs en cm , nous avons réalisé plusieurs test , pour plusieurs longueurs nous avons récupérer les valeurs du capteur et fait une courbe sur excel l’équation de la courbe obtenue nous a permis de convertir les valeurs du capteur en cm.
+
+
+
+
+
+
+
+
+
